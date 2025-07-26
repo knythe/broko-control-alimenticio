@@ -12,6 +12,20 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
-        return $request->expectsJson() ? null : route('login');
+        if (! $request->expectsJson()) {
+            // Detecta si viene de una ruta que contiene /v1 o /v2
+            if ($request->is('v1/*')) {
+                return '/v1/login';
+            }
+
+            if ($request->is('v2/*')) {
+                return '/v2/login';
+            }
+
+            // Ruta por defecto
+            return '/login';
+        }
+
+        return null;
     }
 }
